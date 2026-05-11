@@ -1,20 +1,70 @@
 'use client';
 
-import { useChat } from '@ai-sdk/react';
 import { FormEvent, useState } from 'react';
+
+type Message = { id: string; role: 'user' | 'assistant' | 'system'; content: string };
 
 export default function MathChatbot() {
   const [input, setInput] = useState('');
-  const { messages, sendMessage, status } = useChat();
-
-  const isLoading = status !== 'ready' && status !== 'error';
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value);
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
-    sendMessage({ text: input });
+
+    const userMessage: Message = { id: Date.now().toString(), role: 'user', content: input };
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     setInput('');
+    setIsLoading(true);
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: newMessages }),
+      });
+
+      if (!res.ok) throw new Error(res.statusText);
+      if (!res.body) throw new Error('No response body');
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let assistantContent = '';
+
+      setMessages((prev) => [
+        ...prev,
+        { id: (Date.now() + 1).toString(), role: 'assistant', content: '' },
+      ]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        
+        // Vercel AI SDK toTextStreamResponse may send raw text or data stream.
+        // We will just append the chunk if it's raw text. If it's Vercel format (starts with 0:), we clean it up roughly.
+        let textChunk = chunk;
+        if (textChunk.startsWith('0:"') && textChunk.endsWith('"\n')) {
+          try {
+            textChunk = JSON.parse(textChunk.substring(2));
+          } catch (e) {}
+        }
+
+        assistantContent += textChunk;
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1].content = assistantContent;
+          return updated;
+        });
+      }
+    } catch (err) {
+      console.error('Chat error:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -49,11 +99,7 @@ export default function MathChatbot() {
                 <div className="text-xs font-semibold mb-1 opacity-70">
                   {m.role === 'user' ? 'You' : 'AI Tutor'}
                 </div>
-                <div className="whitespace-pre-wrap">
-                  {m.parts?.map((p: any, i: number) => (
-                    <span key={i}>{p.type === 'text' ? p.text : ''}</span>
-                  ))}
-                </div>
+                <div className="whitespace-pre-wrap">{m.content}</div>
               </div>
             </div>
           ))

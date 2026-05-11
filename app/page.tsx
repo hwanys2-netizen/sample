@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem-5rem)] py-12 px-4 sm:px-6 lg:px-8">
@@ -14,10 +16,10 @@ export default function Home() {
         </div>
 
         <div className="mt-8 flex justify-center gap-4 flex-col sm:flex-row">
-          {/* 가짜(Placeholder) 버튼 */}
-          <button className="inline-flex justify-center items-center px-8 py-3.5 border border-transparent text-lg font-medium rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5">
-            학습 시작하기
-          </button>
+          {/* 챗봇 링크 버튼 */}
+          <Link href="/chat" className="inline-flex justify-center items-center px-8 py-3.5 border border-transparent text-lg font-medium rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5">
+            수학 튜터 시작하기
+          </Link>
           <button className="inline-flex justify-center items-center px-8 py-3.5 border border-gray-300 text-lg font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 shadow-sm hover:shadow-md transition-all duration-200">
             더 알아보기
           </button>
