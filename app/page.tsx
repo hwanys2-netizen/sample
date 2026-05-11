@@ -1,5 +1,3 @@
-import Guestbook from '@/components/Guestbook';
-
 export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem-5rem)] py-12 px-4 sm:px-6 lg:px-8">
@@ -38,7 +36,11 @@ export default function Home() {
             // <CourseList />
             // <Testimonial />
           */}
-          <Guestbook />
+          <div className="w-full h-48 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center text-gray-400 bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer group">
+            <span className="group-hover:text-indigo-500 group-hover:scale-105 transition-all duration-200 font-medium">
+              + 새로운 컴포넌트 추가
+            </span>
+          </div>
         </div>
       </div>
     </div>
