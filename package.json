@@ -11,7 +11,10 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.63",
+    "@ai-sdk/react": "^3.0.179",
     "@neondatabase/serverless": "^1.1.0",
+    "ai": "^6.0.177",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "next": "14.2.3",
